@@ -20,11 +20,11 @@ The trim operation begins at the same position for each video file.
 
 Example: one video file with 01:00:00 (HH:MM:SS) total time is selected. Button is pressed. User inputs 00:15:00 as initial seek time. An output file with 00:45:00 total time is generated (the initial 15 minutes were chopped).
 
-**Requeriments**
+**Requirements**
 
 Directory Opus version >= 12.2.5.
 
-FFmpeg is accessible simply as "ffmpeg".
+FFmpeg, accessible simply as "ffmpeg".
 
 **Install**
 
