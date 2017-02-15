@@ -41,7 +41,7 @@ function OnTrimMovies(scriptCmdData) {
 	// Determine verbosity level.
 	// 1 - Print informative log.
 	// 0 - Print nothing.
-	var verbose = 0;
+	var verbose = 1;
 	// --------------------
 	// Should the script prevent the display of external windows?
 	// If so, set this variable to true.
@@ -63,7 +63,7 @@ function OnTrimMovies(scriptCmdData) {
 	// Check that there are files selected.
 	if (scriptCmdData.func.sourcetab.selected_files.count == 0)
 	{
-		print("No files are selected.");
+		error("No files are selected.");
 	}
 	else
 	{
@@ -121,7 +121,7 @@ function OnTrimMovies(scriptCmdData) {
 			print("Output: " + outputPath);
 
 			// Define how to produce the output file.
-			var trimCmdLine = "ffmpeg -hide_banner -y -ss " + initTime + " -i " + inputPath + " -threads 6 -map 0:v -map 0:a -map 0:s? -map_metadata g -c:v copy -c:a copy -c:s copy " + outputPath;
+			var trimCmdLine = "ffmpeg -hide_banner -y -ss " + initTime + " -i " + inputPath + " -threads 6 -map 0:v -map 0:a? -map 0:s? -map_metadata g -c:v copy -c:a copy -c:s copy " + outputPath;
 			print("Command sent to produce the file: " + trimCmdLine);
 			
 			// Execute trim operation.
@@ -197,15 +197,15 @@ function OnTrimMovies(scriptCmdData) {
 				// Clear commands.
 				cmd.Clear;
 				
-				print("Sucess!");
+				print("Success!");
 			} else {
-				print("FFmpeg was unable to trim the file.");
+				error("FFmpeg was unable to trim the file.");
 			}
 		}
 	}
 
 	// Dialog used to request the time.
-	function askTime(){
+	function askTime() {
 		var dlg = scriptCmdData.func.Dlg;
 		dlg.window = DOpus.Listers(0);
 		dlg.defvalue = "00:00:00";
@@ -216,10 +216,15 @@ function OnTrimMovies(scriptCmdData) {
 		return dlg;
 	}
 
-	// Print only if requested.
-	function print(text){
+	// Print informative log only if requested.
+	function print(text) {
 		if (verbose) {
 			DOpus.Output(text);
 		}
+	}
+	
+	// Display error message.
+	function error(text) {
+		DOpus.Output(text, true);
 	}
 }
