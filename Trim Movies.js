@@ -121,7 +121,7 @@ function OnTrimMovies(scriptCmdData) {
 			print("Output: " + outputPath);
 
 			// Define how to produce the output file.
-			var trimCmdLine = "ffmpeg -hide_banner -y -ss " + initTime + " -i " + inputPath + " -threads 6 -map 0:v -map 0:a? -map 0:s? -map_metadata g -c:v copy -c:a copy -c:s copy " + outputPath;
+			var trimCmdLine = "ffmpeg -xerror -hide_banner -y -ss " + initTime + " -i " + inputPath + " -threads 6 -map 0:v -map 0:a? -map 0:s? -map_metadata g -c:v copy -c:a copy -c:s copy " + outputPath;
 			print("Command sent to produce the file: " + trimCmdLine);
 			
 			// Execute trim operation.
