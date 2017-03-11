@@ -4,7 +4,7 @@ function OnInit(initData) {
 	initData.name = "Trim Movies";
 	initData.desc = "Creates trimmed versions of movie files by chopping the beginning of the data stream while preserving all the metadata of the original file.";
 	initData.copyright = "CC0 Public Domain by AndersonNNunes.org";
-	var version = "0.1";
+	var version = "0.2";
 	initData.version = version;
 	initData.url = "https://github.com/andersonnnunes/TrimMovies";
 	initData.default_enable = true;
@@ -25,7 +25,7 @@ function OnTrimMovies(scriptCmdData) {
 	// Name of tag to apply to trimmed files.
 	// Must end with a semicolon.
 	// Set as empty string if no tag should be applied.
-	var tagForTrimmedFiles = "Trimmed To Favorite Scene;";
+	var tagForTrimmedFiles = "Trimmed To Favorite Scene";
 	// --------------------
 	// Text to append to the name of the output file.
 	var stringToAppendToTrimmedFiles = " - Trimmed";
@@ -77,7 +77,7 @@ function OnTrimMovies(scriptCmdData) {
 		for (var eSel = new Enumerator(scriptCmdData.func.sourcetab.selected_files); !eSel.atEnd(); eSel.moveNext())
 		{
 			var selectedItem = eSel.item();
-			for(var i=0; i<selectedItem.groups.length; i++){
+			for (var i=0; i<selectedItem.groups.length; i++){
 				if (selectedItem.groups(i).display_name == localizedMovieGroupTypeName)
 				{
 					cmd.AddFile(selectedItem);
@@ -131,18 +131,22 @@ function OnTrimMovies(scriptCmdData) {
 				// -------------------- Copy metadata to the trimmed file.
 				
 				// Define how to set the tags for the output file.
-				tagString = tagForTrimmedFiles;
+				var tagString = tagForTrimmedFiles;
 				for (var tagEnum = new Enumerator(cItem.metadata.tags); !tagEnum.atEnd(); tagEnum.moveNext())
 				{
-					if (tagString != "")
-					{
-						tagString += tagEnum.item();
+					if (tagString != "") {
 						tagString += ";";
+						tagString += tagEnum.item();
+					}else {
+						tagString = tagEnum.item();
 					}
 				}
-				setTagCmdLine = "SetAttr " + outputPath + " META \"tags:" + tagString + "\"";
-				print("Command sent to set tags: " + setTagCmdLine);
-				cmd.AddLine(setTagCmdLine);
+				
+				if (tagString != "") {
+					setTagCmdLine = "SetAttr " + outputPath + " META \"tags:" + tagString + "\"";
+					print("Command sent to set tags: " + setTagCmdLine);
+					cmd.AddLine(setTagCmdLine);
+				}
 				
 				// Define how to set the labels for the output file.
 				var labelVector = cItem.labels;
@@ -163,27 +167,25 @@ function OnTrimMovies(scriptCmdData) {
 
 				// Define how to set the rating for the output file.
 				var ratingValue = cItem.metadata.other.rating;
-				if (ratingValue > 0)
-				{
+				if (ratingValue > 0) {
 					var setRatingCmdLine = "SetAttr " + outputPath + " META Rating:" + ratingValue;
 					print("Command sent to set the rating: " + setRatingCmdLine);
 					cmd.AddLine(setRatingCmdLine);
 				}
 
 				// Define how to set the movie specific metadata for the output file.
-				var setMovieMetatadaCmdLine = "SetAttr " + outputPath + " META \"copyfrom:8," + cItem + "\"";
+				var setMovieMetatadaCmdLine = "SetAttr " + outputPath + " META \"copyfrom:9," + cItem + "\"";
 				print("Command sent to set the movie specific metadata: " + setMovieMetatadaCmdLine);
 				cmd.AddLine(setMovieMetatadaCmdLine);
 
 				// Define how to set the user comment for the output file.
-				// Currently this is not necessary, as FFmpeg already does this if the comment is embedded. Maybe if the user were using description.ion this would be necessary.
-				//var commentString = cItem.metadata.other.usercomment;
-				//if (commentString.lenght != "")
-				//{
-				//	var setCommentCmdLine = "SetAttr " + outputPath + " \"META Comment:" + commentString + "\"";
-				//	print("Command sent to set the user's comment: " + setCommentCmdLine);
-				//	cmd.AddLine(setCommentCmdLine);
-				//}
+				var commentString = cItem.metadata.other.usercomment;
+				if (commentString)
+				{
+					var setCommentCmdLine = "SetAttr " + outputPath + " META \"Comment:" + commentString + "\"";
+					print("Command sent to set the user's comment: " + setCommentCmdLine);
+					cmd.AddLine(setCommentCmdLine);
+				}
 
 				// Define how to replace the original .
 				if (alwaysOverwrite || scriptCmdData.func.qualifiers == "shift") {
